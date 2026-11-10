@@ -1,0 +1,11 @@
+# Dependências
+node_modules/
+
+# Relatórios e Evidências gerados localmente (para não subir pro Git)
+reports/
+target/
+test-results/
+
+# Arquivos de sistema do SO (opcional, mas boa prática)
+.DS_Store
+Thumbs.db
