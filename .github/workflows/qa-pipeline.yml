@@ -1,0 +1,50 @@
+name: QA E2E Pipeline (Playwright + Cucumber + Vídeos)
+
+on:
+  push:
+    branches: [ main, develop ]
+    paths:
+      - 'app/**'
+      - 'features/**'
+      - 'pages/**'
+      - 'support/**'
+      - 'step-definitions/**'
+      - 'package.json'
+      - 'playwright.config.js'
+  pull_request:
+    branches: [ main, develop ]
+  workflow_dispatch:
+
+jobs:
+  run-e2e-pipeline:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout do Repositório
+        uses: actions/checkout@v4
+
+      - name: Configurar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Instalar Dependências do Projeto
+        run: npm ci
+
+      - name: Instalar Navegadores e Dependências do Playwright
+        run: npx playwright install --with-deps
+
+      - name: Executar Testes Automatizados E2E (Cucumber)
+        run: npm run test:e2e
+        continue-on-error: true
+
+      - name: Salvar Relatórios e Evidências em Vídeo (Artifacts)
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: e2e-video-evidences-and-reports
+          path: |
+            target/
+            test-results/
+          retention-days: 7
