@@ -5,13 +5,12 @@ class CheckoutPage {
         this.cardInput = '#card-number';
         this.btnCheckout = '#btn-checkout';
         this.modalTitle = '#modal-title';
-        // Seletor do botão "Entendido" dentro do modal de diálogo
         this.btnModalEntendido = '#custom-modal button'; 
     }
 
     async adicionarProdutoAoCarrinho(productName) {
-        // 1. Clica no botão "Adicionar" do produto escolhido no catálogo
-        const productButton = `xpath=//p[text()='${productName}']/ancestor::div[contains(@class, 'flex')]//button`;
+        // 1. Clica no botão "Adicionar" do produto escolhido no catálogo de forma dinâmica, indiferente da sequência do elemento na tela
+        const productButton = `xpath=//*[contains(text(),'${productName}')]/following::button[1]`;
         await this.page.click(productButton);
 
         // 2. Clica no botão "Entendido" do modal que aparece logo em seguida
