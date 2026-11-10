@@ -1,5 +1,5 @@
 // support/world.js
-const { setWorldConstructor, World,setDefaultTimeout, Before, After } = require('@cucumber/cucumber');
+const { setWorldConstructor, World, setDefaultTimeout, Before, After } = require('@cucumber/cucumber');
 const { chromium } = require('@playwright/test');
 const path = require('path');
 const url = require('url');
@@ -7,8 +7,9 @@ const fs = require('fs');
 const LoginPage = require('../pages/LoginPage');
 const DashboardPage = require('../pages/DashboardPage');
 const CheckoutPage = require('../pages/CheckoutPage');
+
 setDefaultTimeout(15 * 1000);
-// Função para limpar pastas temp_recordings vazias dentro de test-results/videos
+
 function cleanEmptyTempFolders() {
   const videosRoot = path.resolve(__dirname, '../test-results/videos');
   if (fs.existsSync(videosRoot)) {
@@ -18,7 +19,6 @@ function cleanEmptyTempFolders() {
         if (item.startsWith('temp_recordings_')) {
           const tempPath = path.join(videosRoot, item);
           if (fs.statSync(tempPath).isDirectory()) {
-            // Verifica se a pasta está vazia
             const files = fs.readdirSync(tempPath);
             if (files.length === 0) {
               fs.rmdirSync(tempPath);
@@ -26,25 +26,14 @@ function cleanEmptyTempFolders() {
           }
         }
       });
-    } catch (e) {
-      // Ignora caso esteja em uso por algum processo ativo
-    }
+    } catch (e) {}
   }
 }
-// Função auxiliar para formatar a data/hora: dd-MM-yyyy - hhMMss
+
 function getFormattedTimestamp() {
   const now = new Date();
   const pad = (n) => String(n).padStart(2, '0');
-  
-  const day = pad(now.getDate());
-  const month = pad(now.getMonth() + 1);
-  const year = now.getFullYear();
-  
-  const hours = pad(now.getHours());
-  const minutes = pad(now.getMinutes());
-  const seconds = pad(now.getSeconds());
-
-  return `${day}-${month}-${year} - ${hours}${minutes}${seconds}`;
+  return `${pad(now.getDate())}-${pad(now.getMonth() + 1)}-${now.getFullYear()} - ${pad(now.getHours())}${pad(now.getMinutes())}${pad(now.getSeconds())}`;
 }
 
 class CustomWorld extends World {
@@ -56,17 +45,32 @@ class CustomWorld extends World {
     this.timestampFolder = getFormattedTimestamp();
   }
 
-  async initBrowser() {
+  async initBrowser(scenario) {
+    // BLINDAGEM CENTRALIZADA: Se o cenário tiver a tag @api ou NÃO tiver @e2e, ele aborta aqui mesmo!
+    const tags = scenario && scenario.pickle && scenario.pickle.tags 
+      ? scenario.pickle.tags.map(t => t.name.toLowerCase()) 
+      : [];
+
+    if (tags.includes('@api') || !tags.includes('@e2e')) {
+      return; // Sai sem abrir absolutamente nada do Playwright para testes de API!
+    }
+
     if (!this.browser) {
       this.browser = await chromium.launch({ 
         headless: true, 
-        slowMo: 100 // Podemos diminuir um pouco o slowMo agora que está rodando junto!
+        slowMo: 100 
       });
       
-      // Cria um contexto totalmente isolado para este cenário específico
+      const scenarioName = scenario && scenario.pickle && scenario.pickle.name 
+        ? scenario.pickle.name.replace(/[^a-zA-Z0-9]/g, '_').substring(0, 50) 
+        : 'teste';
+
       this.context = await this.browser.newContext({
-        recordVideo: { dir: `test-results/videos/temp_recordings_${Date.now()}_${Math.floor(Math.random() * 1000)}/` }
+        recordVideo: { 
+          dir: `test-results/videos/temp_recordings_${scenarioName}_${Date.now()}/` 
+        }
       });
+      
       this.page = await this.context.newPage();
       
       this.loginPage = new LoginPage(this.page);
@@ -79,12 +83,16 @@ class CustomWorld extends World {
   }
 
   async closeBrowser(scenario) {
-    if (this.browser) {
+    // Se nunca abriu página/browser (ex: testes de API), apenas ignora e sai fora
+    if (!this.page || !this.browser) {
+      return;
+    }
+
+    try {
       const video = this.page.video();
       const videoPath = video ? await video.path() : null;
       const originalFileName = videoPath ? path.basename(videoPath) : null;
 
-      // Descobre se passou ou falhou diretamente inspecionando o objeto scenario aqui dentro
       let isPassed = true;
       if (scenario && scenario.result) {
         if (typeof scenario.result.passed === 'boolean') {
@@ -98,6 +106,7 @@ class CustomWorld extends World {
       await this.context.close();
       await this.browser.close();
       this.browser = null;
+      this.page = null;
 
       if (videoPath && fs.existsSync(videoPath) && originalFileName) {
         const statusFolder = isPassed ? 'Passed' : 'Failed';
@@ -110,39 +119,18 @@ class CustomWorld extends World {
         const newVideoPath = path.join(targetDir, originalFileName);
         fs.renameSync(videoPath, newVideoPath);
       }
-    }
+    } catch (e) {}
     cleanEmptyTempFolders();
   }
-
 }
 
 setWorldConstructor(CustomWorld);
 
+// Os hooks viram apenas chamadas limpas, delegando a inteligência para a classe World
 Before(async function (scenario) {
-  // Pega todas as tags do cenário atual
-  const tags = scenario.pickle.tags.map(t => t.name);
-
-  // Se o cenário for de API (ou não for uma tag de UI/E2E), NÃO abre o navegador
-  if (tags.includes('@api') || !tags.includes('@e2e')) {
-    return;
-  }
-
-  // Caso contrário, abre o navegador normalmente para o E2E
-  if (this.initBrowser) {
-    await this.initBrowser();
-  }
+  await this.initBrowser(scenario);
 });
 
 After(async function (scenario) {
-  const tags = scenario.pickle.tags.map(t => t.name);
-
-  // Se for API ou não for E2E, não tenta fechar browser nem salvar vídeo
-  if (tags.includes('@api') || !tags.includes('@e2e')) {
-    return;
-  }
-
-  // Caso contrário, fecha o browser e salva os artefatos do E2E
-  if (this.closeBrowser) {
-    await this.closeBrowser(scenario);
-  }
+  await this.closeBrowser(scenario);
 });

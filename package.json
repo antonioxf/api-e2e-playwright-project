@@ -5,7 +5,8 @@
   "scripts": {
   "start:mock": "node app/api/server.js",
   "test:e2e": "cucumber-js --tags @e2e --format html:reports/e2e/cucumber-e2e-report.html",
-  "test:api": "start-server-and-test start:mock http://localhost:3000/api/users \"cucumber-js --tags @api --format html:reports/api/cucumber-api-report.html\""
+  "test:api": "start-server-and-test start:mock http://localhost:3000/api/users \"cucumber-js --tags @api --format html:reports/api/cucumber-api-report.html\"",
+  "test:all": "start-server-and-test start:mock http://localhost:3000/api/users \"cucumber-js --format html:reports/all/cucumber-all-report.html\""
   },
   "devDependencies": {
     "@cucumber/cucumber": "^9.6.0",
