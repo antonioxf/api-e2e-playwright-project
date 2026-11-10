@@ -35,17 +35,17 @@ jobs:
       - name: Instalar Navegadores e Dependências do Playwright
         run: npx playwright install --with-deps
 
-      # 1. Executa os Testes de API (Sobe o Express na porta 3000, testa e encerra)
+      # Roda a API no Actions
       - name: Executar Testes Automatizados de API
         run: npm run test:api
         continue-on-error: true
 
-      # 2. Executa os Testes E2E de Interface
+      # Roda o E2E no Actions
       - name: Executar Testes Automatizados E2E (Cucumber)
         run: npm run test:e2e
         continue-on-error: true
 
-      # 3. Salva todos os relatórios e evidências (E2E e API) nos Artifacts
+      # Salva os relatórios de ambos nos Artifacts
       - name: Salvar Relatórios e Evidências (Artifacts)
         uses: actions/upload-artifact@v4
         if: always()
