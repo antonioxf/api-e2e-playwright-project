@@ -1,4 +1,4 @@
-name: QA E2E Pipeline (Playwright + Cucumber + Vídeos)
+name: QA Pipeline (E2E & API)
 
 on:
   push:
@@ -16,7 +16,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  run-e2e-pipeline:
+  run-qa-pipeline:
     runs-on: ubuntu-latest
 
     steps:
@@ -35,16 +35,24 @@ jobs:
       - name: Instalar Navegadores e Dependências do Playwright
         run: npx playwright install --with-deps
 
+      # 1. Executa os Testes de API (Sobe o Express na porta 3000, testa e encerra)
+      - name: Executar Testes Automatizados de API
+        run: npm run test:api
+        continue-on-error: true
+
+      # 2. Executa os Testes E2E de Interface
       - name: Executar Testes Automatizados E2E (Cucumber)
         run: npm run test:e2e
         continue-on-error: true
 
-      - name: Salvar Relatórios e Evidências em Vídeo (Artifacts)
+      # 3. Salva todos os relatórios e evidências (E2E e API) nos Artifacts
+      - name: Salvar Relatórios e Evidências (Artifacts)
         uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: e2e-video-evidences-and-reports
+          name: qa-test-reports-and-evidences
           path: |
+            reports/
             target/
             test-results/
           retention-days: 7
