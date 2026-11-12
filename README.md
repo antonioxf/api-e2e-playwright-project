@@ -44,13 +44,13 @@ A estrutura do projeto foi organizada para garantir alta escalabilidadade, isola
 ## 🛠️ Versões Utilizadas
 **Node.js:** v20.17.0.x (LTS)
 
-**Playwright:** ^1.40.0.x
+**Playwright:** ^1.40.x
 
-**Cucumber.js:** ^9.6.0x
+**Cucumber.js:** ^9.6.x
 
-**Express:** ^5.3.0x (para o Mock de API)
+**Express:** ^5.3.x (para o Mock de API)
 
-**Start-server-and-test:** "^2.1.5x (Para iniciar o servidor Express e finalizar)
+**Start-server-and-test:** "^2.x (Para iniciar o servidor Express e finalizar)
 
 **Gerenciador de Pacotes:** npm
 
@@ -94,6 +94,11 @@ npm run test:api && npm run test:e2e
 Se desejar rodar a esteira inteira podendo paralelizar e ver os dois resultados em um só report:
 ```text
 npm run test:all
+```
+**5. Caso necessite checar o acesso ao frontend local de forma manual utilize as seguintes credenciais:**
+```text
+Usuário: admin_qa
+Senha: senha123
 ```
 ## 📊 Relatórios & Evidências
 **Relatórios HTML do Cucumber:** Disponíveis nos caminhos reports/api/ e reports/e2e/ após a execução das suítes.
