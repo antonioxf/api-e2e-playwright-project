@@ -16,7 +16,13 @@ A estrutura do projeto foi organizada para garantir alta escalabilidadade, isola
 │   └── api/
 │       └── server.js            # Servidor mock em JavaScript com Express (API backend)
 │   └── e2e/
-│       └── index.html           # Aplicação frontend local para testes E2E feita em HTML + JavaScript
+│       └── index_dev.html           # Aplicação frontend local para testes E2E feita em HTML + JavaScript simulando ambiente DEV
+│       └── index_prod.html          # Aplicação frontend local para testes E2E feita em HTML + JavaScript simulando ambiente PROD
+│       └── index_staging.html       # Aplicação frontend local para testes E2E feita em HTML + JavaScript simulando ambiente STAGING
+├── config/
+│   └── .env.dev                 # Arquivo de configuração apontando para o ambiente DEV
+│   └── .env.prod                # Arquivo de configuração apontando para o ambiente PROD
+│   └── .env.staging             # Arquivo de configuração apontando para o ambiente STAGING
 ├── features/
 │   └── api/
 │       └── api_tests.feature        # Cenários BDD de teste de API (@api)
@@ -28,6 +34,7 @@ A estrutura do projeto foi organizada para garantir alta escalabilidadade, isola
 │   └── CheckoutPage.js          # Page Object para a tela de Checkout/Fluxo
 ├── support/
 │   └── world.js                 # Ciclo de vida, hooks e gerenciamento do Playwright
+│   └── endpoints.js             # Scripts com os endpoints usados
 ├── step-definitions/
 │   └── api_steps.js             # Implementações dos passos Gherkin para API
 │   └── e2e_steps.js             # Implementações dos passos Gherkin para Interface/UI
@@ -119,3 +126,58 @@ O projeto conta com uma esteira automatizada configurada via GitHub Actions (.gi
 3. Execução modularizada dos testes de API e E2E.
 
 4. Compactação e upload automático de todos os relatórios e artefatos de vídeo para a aba Actions > Artifacts do GitHub.
+
+## 💡Respostas das perguntas e alterações
+**Pergunta 1. Vi que a URL está mapeada diretamente, como seria se tivessesmos diferentes ambientes para rodar? Como ficaria esta estrutura e como seria executado para diferentes ambientes? Consegue fazer um ex para mais de um ambiente.**
+
+**Resposta 1: Crei 3 ambientes locais do projeto distintos na pasta ./app/e2e: index_dev.html, index_prod.html e index_staging.html.
+Para apontar corretamente é necessário trabalhar com configurações de ambientes, logo criei as dotenvs dentro de ./config com os nomes: .env.dev, .env.prod e .env.staging.
+Também alterei os scripts world.js e playwright.config.js para capturar o comando passado no console, conforme modificações presente no último commit.**
+
+**Como executar os múltiplos ambientes:**
+**1. Instale a lib do dotenv:**
+```text
+npm install --save-dev dotenv   
+```
+
+**2. Para executar em ambiente de DEV:**
+```text
+$env:ENV="dev"; npm test:e2e      
+```
+
+**3. Para executar em ambiente de STAGING:**
+```text
+$env:ENV="staging"; npm test:e2e      
+```
+
+**4. Para executar em ambiente de PROD:**
+```text
+$env:ENV="prod"; npm test:e2e      
+```
+
+**Pergunta 2. Vi os nomes mapeados diretos na feature, como seria se fosse usar dados dinamicos? Consegue colocar um ex?**
+
+**Resposta 2: Adicionei a biblioteca faker para gerar os dados dinâmicos/aleatórios com a tag @tarefa1_fake (é possível criar o script manualmente, mas não quis reinventar a roda) com essa lib criei um novo cenário em ui_tests.feature, adicionei a função preencherFormularioPerfilFake recebendo o parâmetro da instância do faker dentro da classe DashboardPage com os campos preenchidos com dados aleatórios e também adicionei a função 'preencho o formulário de cadastro com dados aleatórios válidos' em e2e_steps.js.
+Desta forma é possível gerar dados aleatórios/dinâmicos nos campos.**
+
+**Como executar os testes com dados dinâmicos/aleatórios:**
+**1. Instale a lib do faker:**
+```text
+npm install --save-dev @faker-js/faker   
+```
+
+**2. Para executar os cenários incluindo o adicionado (rodará em DEV nesse caso que está sem o parâmetro de ambiente):**
+```text
+npm run test:e2e 
+```
+
+**Pergunta 3. Caso eu precise ajustar as rotas do endpoint, faz sentido deixar todas mapeadas em arquivo de feature pra organizar/mapear?**
+
+**Resposta 3: O ideal é ter um arquivo com os endpoints e alterá-los diretamente nele, para não ter que alterar na mão um por um dentro da feature, por isso criei dentro de ./support o script endpoint.js com os endpoints da API usados (menos o PRODUCTS que coloquei só de amostra mesmo, pois esse eu não implementei no server.js) alterei o api_steps.js para receber o módulo do ENDPOINTS, seus valores internos e alterei as funções de step definitions para aceitar os endpoints passados e alterei o api_tests.feature com os novos passos do step definitions para não receber parâmetros estáticos e sim apontar para o que estiver definido no passo.**
+
+**Como executar os testes de api agora apontando para os endpoints em endpoint.js**
+**1. Execute os cenários de api:**
+```text
+npm run test:api   
+```
+**Todas as alterações foram testadas e passaram no CI/CD do Github Actions, qualquer dúvida sobre as alterações checar o último commit 45590d2**
