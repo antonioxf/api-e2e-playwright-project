@@ -22,6 +22,16 @@ Funcionalidade: Validação das Tarefas 1 e 2 - E2E com Playwright e Cucumber
     E clico em salvar informações completa
     Então devo ver a mensagem de sucesso do modal "Sucesso!"
 
+  @tarefa1_fake @positivo
+  Cenário: Realizar login com sucesso, navegar para o painel e preencher o formulário válido com alguns valores aleatórios (Tarefa 1)
+    Quando eu preencho o login com usuário "admin_qa" e senha "senha123"
+    E clico no botão de entrar
+    Então devo visualizar o painel de boas-vindas com o usuário "admin_qa"
+    E preencho o formulário de cadastro com dados aleatórios válidos
+    E clico em salvar informações completa
+    Então devo ver a mensagem de sucesso do modal "Sucesso!"
+
+
   @tarefa1 @negativo
   Esquema do Cenário: Validar cenários negativos de login e formulário (Tarefa 1)
     Quando eu preencho o login com usuário "<usuario>" e senha "<senha>"

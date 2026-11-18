@@ -15,6 +15,8 @@ module.exports = defineConfig({
   ],
 
   use: {
+    // Pega a URL base do arquivo .env correspondente (ex: /index_dev.html)
+    baseURL: process.env.BASE_URL,
     headless: true,
     screenshot: 'on',
     trace: 'on-first-retry',
@@ -26,7 +28,7 @@ module.exports = defineConfig({
       use: { 
         ...devices['Desktop Chrome'],
         launchOptions: {
-          slowMo: 300, 
+          slowMo: 100, 
         }
       },
     },

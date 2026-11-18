@@ -1,7 +1,7 @@
-// step-definitions/api_steps.js
 const { Given, When, Then } = require('@cucumber/cucumber');
 const { expect } = require('@playwright/test');
 const playwright = require('@playwright/test');
+const ENDPOINTS = require('../support/endpoints');
 
 Given('que o cliente da API está configurado com a base URL de testes', async function () {
   // Configura o contexto de requisição usando a API pública ReqRes (reqres.in)
@@ -10,36 +10,36 @@ Given('que o cliente da API está configurado com a base URL de testes', async f
   });
 });
 
-When('eu envio uma requisição GET para o endpoint {string}', async function (endpoint) {
-  this.response = await this.apiContext.get(endpoint);
+When('eu envio uma requisição GET para o endpoint de usuários', async function () {
+  this.response = await this.apiContext.get(ENDPOINTS.USERS);
   this.responseBody = await this.response.json().catch(() => ({}));
 });
 
-When('eu envio uma requisição POST para o endpoint {string} com os dados:', async function (endpoint, dataTable) {
+When('eu envio uma requisição POST para o endpoint de usuários com os dados:', async function (dataTable) {
   const data = dataTable.hashes()[0];
-  this.response = await this.apiContext.post(endpoint, {
+  this.response = await this.apiContext.post(ENDPOINTS.USERS, {
     data: data
   });
   this.responseBody = await this.response.json().catch(() => ({}));
 });
 
-When('eu envio uma requisição POST para o endpoint {string} com dados vazios', async function (endpoint) {
-  this.response = await this.apiContext.post(endpoint, {
+When('eu envio uma requisição POST para o endpoint de usuários com dados vazios', async function () {
+  this.response = await this.apiContext.post(ENDPOINTS.USERS, {
     data: {}
   });
   this.responseBody = await this.response.json().catch(() => ({}));
 });
 
-When('eu envio uma requisição PUT para o endpoint {string} com os dados:', async function (endpoint, dataTable) {
+When('eu envio uma requisição PUT para o endpoint de inclusão de usuário com os dados:', async function (dataTable) {
   const data = dataTable.hashes()[0];
-  this.response = await this.apiContext.put(endpoint, {
+  this.response = await this.apiContext.put(ENDPOINTS.USER_INCLUDE, {
     data: data
   });
   this.responseBody = await this.response.json().catch(() => ({}));
 });
 
-When('eu envio uma requisição DELETE para o endpoint {string}', async function (endpoint) {
-  this.response = await this.apiContext.delete(endpoint);
+When('eu envio uma requisição DELETE para o endpoint de inclusão de usuário', async function () {
+  this.response = await this.apiContext.delete(ENDPOINTS.USER_INCLUDE);
 });
 
 Then('o status code da resposta deve ser {int}', function (statusCode) {

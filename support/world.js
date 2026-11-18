@@ -7,7 +7,8 @@ const fs = require('fs');
 const LoginPage = require('../pages/LoginPage');
 const DashboardPage = require('../pages/DashboardPage');
 const CheckoutPage = require('../pages/CheckoutPage');
-
+const environment = process.env.ENV || 'dev';
+require('dotenv').config({ path: path.resolve(__dirname, `../config/.env.${environment}`) });
 setDefaultTimeout(15 * 1000);
 
 function cleanEmptyTempFolders() {
@@ -76,8 +77,16 @@ class CustomWorld extends World {
       this.loginPage = new LoginPage(this.page);
       this.dashboardPage = new DashboardPage(this.page);
       this.checkoutPage = new CheckoutPage(this.page);
+      // Pega o ambiente atual direto de process.env (com fallback para 'dev')
+      const currentEnv = process.env.ENV || 'dev';
+      // Pega o valor definido no .env (ex: staging.html ou prod.html)
+      const htmlFileName = process.env.BASE_URL; // Ex: "staging.html"
+      if (!htmlFileName) {
+        throw new Error(`A variável BASE_URL não foi definida para o ambiente: ${currentEnv}`);
+      }
 
-      const htmlPath = path.resolve(__dirname, '../app/e2e/index.html');
+      // Monta o caminho absoluto dinamicamente usando a raiz do projeto (process.cwd())
+      const htmlPath = path.resolve(process.cwd(), 'app', 'e2e', htmlFileName);
       this.localUrl = url.pathToFileURL(htmlPath).href;
     }
   }

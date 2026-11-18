@@ -1,6 +1,7 @@
 // step-definitions/steps.js
 const { Given, When, Then, Before, After } = require('@cucumber/cucumber');
 const { expect } = require('@playwright/test');
+const { faker } = require('@faker-js/faker');
 
 Before(async function () {
   await this.initBrowser();
@@ -30,6 +31,10 @@ Then('devo visualizar o painel de boas-vindas com o usuário {string}', async fu
 When('preencho o formulário de cadastro com dados válidos:', async function (dataTable) {
   const data = dataTable.rowsHash();
   await this.dashboardPage.preencherFormularioPerfil(data);
+});
+
+When('preencho o formulário de cadastro com dados aleatórios válidos', async function () {
+  await this.dashboardPage.preencherFormularioPerfilFake(faker);
 });
 
 When('clico em salvar informações completa', async function () {

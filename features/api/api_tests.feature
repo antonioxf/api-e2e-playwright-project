@@ -7,13 +7,13 @@ Funcionalidade: Testes Automatizados de API - CRUD Completo e Validações
 
   @api_get @positivo
   Cenário: Validar listagem de usuários com sucesso (GET)
-    Quando eu envio uma requisição GET para o endpoint "/api/users"
+    Quando eu envio uma requisição GET para o endpoint de usuários
     Então o status code da resposta deve ser 200
     E o corpo da resposta deve conter uma lista de usuários válida
 
   @api_post @positivo
   Cenário: Criar um novo usuário com sucesso (POST)
-    Quando eu envio uma requisição POST para o endpoint "/api/users" com os dados:
+    Quando eu envio uma requisição POST para o endpoint de usuários com os dados:
       | name  | job     |
       | Jão   | QA Lead |
     Então o status code da resposta deve ser 201
@@ -21,12 +21,12 @@ Funcionalidade: Testes Automatizados de API - CRUD Completo e Validações
 
   @api_post @negativo
   Cenário: Tentar criar usuário com payload malformado ou dados ausentes (POST Negativo)
-    Quando eu envio uma requisição POST para o endpoint "/api/users" com dados vazios
+    Quando eu envio uma requisição POST para o endpoint de usuários com dados vazios
     Então o status code da resposta deve ser 400
 
   @api_put @positivo
   Cenário: Atualizar dados de um usuário existente (PUT)
-    Quando eu envio uma requisição PUT para o endpoint "/api/users/2" com os dados:
+    Quando eu envio uma requisição PUT para o endpoint de inclusão de usuário com os dados:
       | name       | job            |
       | Jão Senior | Senior QA Eng  |
     Então o status code da resposta deve ser 200
@@ -34,5 +34,5 @@ Funcionalidade: Testes Automatizados de API - CRUD Completo e Validações
 
   @api_delete @positivo
   Cenário: Deletar um usuário existente (DELETE)
-    Quando eu envio uma requisição DELETE para o endpoint "/api/users/2"
+    Quando eu envio uma requisição DELETE para o endpoint de inclusão de usuário
     Então o status code da resposta deve ser 204
