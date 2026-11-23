@@ -157,7 +157,7 @@ $env:ENV="prod"; npm test:e2e
 
 **Pergunta 2. Vi os nomes mapeados diretos na feature, como seria se fosse usar dados dinamicos? Consegue colocar um ex?**
 
-**Resposta 2: Adicionei a biblioteca faker para gerar os dados dinâmicos/aleatórios com a tag @tarefa1_fake (é possível criar o script manualmente, mas não quis reinventar a roda) com essa lib criei um novo cenário com a tag @tarefa1_fake em ui_tests.feature, adicionei a função preencherFormularioPerfilFake recebendo o parâmetro da instância do faker dentro da classe DashboardPage com os campos preenchidos com dados aleatórios e também adicionei a função 'preencho o formulário de cadastro com dados aleatórios válidos' em e2e_steps.js.
+**Resposta 2: Adicionei a biblioteca faker para gerar os dados dinâmicos/aleatórios(é possível criar o script manualmente, mas não quis reinventar a roda) com essa lib criei um novo cenário com a tag @tarefa1_fake em ui_tests.feature, adicionei a função preencherFormularioPerfilFake recebendo o parâmetro da instância do faker dentro da classe DashboardPage com os campos preenchidos com dados aleatórios e também adicionei a função 'preencho o formulário de cadastro com dados aleatórios válidos' em e2e_steps.js.
 Desta forma é possível gerar dados aleatórios/dinâmicos nos campos.**
 
 **Como executar os testes com dados dinâmicos/aleatórios:**
